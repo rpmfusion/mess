@@ -1,0 +1,16 @@
+diff -up mame-0.137/src/osd/sdl/sdlprefix.h.fortify mame-0.137/src/osd/sdl/sdlprefix.h
+--- mame-0.137/src/osd/sdl/sdlprefix.h.fortify	2010-03-21 14:20:41.000000000 +0100
++++ mame-0.137/src/osd/sdl/sdlprefix.h	2010-03-21 14:21:07.000000000 +0100
+@@ -50,9 +50,9 @@
+ #endif
+ 
+ // fix for Ubuntu 8.10
+-#ifdef _FORTIFY_SOURCE
+-#undef _FORTIFY_SOURCE
+-#endif
++// #ifdef _FORTIFY_SOURCE
++// #undef _FORTIFY_SOURCE
++// #endif
+ 
+ #endif /* SDLMAME_UNIX */
+ 

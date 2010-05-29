@@ -1,0 +1,35 @@
+diff -up mame-0.137/makefile.verbosebuild mame-0.137/makefile
+--- mame-0.137/makefile.verbosebuild	2010-03-21 15:38:37.000000000 +0100
++++ mame-0.137/makefile	2010-03-21 15:40:09.000000000 +0100
+@@ -268,11 +268,11 @@ BUILD_EXE = $(EXE)
+ endif
+ 
+ # compiler, linker and utilities
+-AR = @ar
+-CC = @gcc
+-LD = @g++
++AR = ar
++CC = gcc
++LD = g++
+ MD = -mkdir$(EXE)
+-RM = @rm -f
++RM = rm -f
+ 
+ 
+ 
+@@ -688,12 +688,12 @@ $(OBJ)/%.s: $(SRC)/%.c | $(OSPREBUILD)
+ 
+ $(OBJ)/%.lh: $(SRC)/%.lay $(FILE2STR)
+ 	@echo Converting $<...
+-	@$(FILE2STR) $< $@ layout_$(basename $(notdir $<))
++	$(FILE2STR) $< $@ layout_$(basename $(notdir $<))
+ 
+ $(OBJ)/%.fh: $(SRC)/%.png $(PNG2BDC) $(FILE2STR)
+ 	@echo Converting $<...
+-	@$(PNG2BDC) $< $(OBJ)/temp.bdc
+-	@$(FILE2STR) $(OBJ)/temp.bdc $@ font_$(basename $(notdir $<)) UINT8
++	$(PNG2BDC) $< $(OBJ)/temp.bdc
++	$(FILE2STR) $(OBJ)/temp.bdc $@ font_$(basename $(notdir $<)) UINT8
+ 
+ $(OBJ)/%.a:
+ 	@echo Archiving $@...
