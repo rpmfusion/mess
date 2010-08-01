@@ -1,11 +1,11 @@
 # the debug build is disabled by default, please use --with debug to override
 %bcond_with debug
 
-%global baseversion 138
+%global baseversion 139
 
 Name:           mess
 Version:        0.%{baseversion}
-Release:        2%{?dist}
+Release:        1%{?dist}
 Summary:        Multiple Emulator Super System
 
 Group:          Applications/Emulators
@@ -214,6 +214,10 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Sun Aug 01 2010 Julian Sikorski <belegdol@fedoraproject.org> - 0.139-1
+- Updated to 0.139
+- Updated the verbosebuild patch
+
 * Mon May 24 2010 Julian Sikorski <belegdol@fedoraproject.org> - 0.138-2
 - Binary is MAME-licensed, BSD only applies to the source
 

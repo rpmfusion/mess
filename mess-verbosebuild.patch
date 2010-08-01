@@ -1,7 +1,7 @@
-diff -up mame-0.137/makefile.verbosebuild mame-0.137/makefile
---- mame-0.137/makefile.verbosebuild	2010-03-21 15:38:37.000000000 +0100
-+++ mame-0.137/makefile	2010-03-21 15:40:09.000000000 +0100
-@@ -268,11 +268,11 @@ BUILD_EXE = $(EXE)
+diff -up mess-0.139/makefile.verbosebuild mess-0.139/makefile
+--- mess-0.139/makefile.verbosebuild	2010-08-01 19:26:32.000000000 +0200
++++ mess-0.139/makefile	2010-08-01 19:26:44.000000000 +0200
+@@ -294,12 +294,12 @@ BUILD_EXE = $(EXE)
  endif
  
  # compiler, linker and utilities
@@ -13,11 +13,13 @@ diff -up mame-0.137/makefile.verbosebuild mame-0.137/makefile
 +LD = g++
  MD = -mkdir$(EXE)
 -RM = @rm -f
+-OBJDUMP = @objdump
 +RM = rm -f
++OBJDUMP = objdump
  
  
  
-@@ -688,12 +688,12 @@ $(OBJ)/%.s: $(SRC)/%.c | $(OSPREBUILD)
+@@ -727,12 +727,12 @@ $(OBJ)/%.s: $(SRC)/%.c | $(OSPREBUILD)
  
  $(OBJ)/%.lh: $(SRC)/%.lay $(FILE2STR)
  	@echo Converting $<...
