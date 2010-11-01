@@ -1,7 +1,7 @@
 # the debug build is disabled by default, please use --with debug to override
 %bcond_with debug
 
-%global baseversion 139
+%global baseversion 140
 
 Name:           mess
 Version:        0.%{baseversion}
@@ -214,6 +214,10 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Mon Nov 01 2010 Julian Sikorski <belegdol@fedoraproject.org> - 0.140-1
+- Updated to 0.140
+- Updated the verbosebuild patch
+
 * Sun Aug 01 2010 Julian Sikorski <belegdol@fedoraproject.org> - 0.139-1
 - Updated to 0.139
 - Updated the verbosebuild patch
