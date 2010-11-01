@@ -1,6 +1,6 @@
-diff -up mess-0.139/makefile.verbosebuild mess-0.139/makefile
---- mess-0.139/makefile.verbosebuild	2010-08-01 19:26:32.000000000 +0200
-+++ mess-0.139/makefile	2010-08-01 19:26:44.000000000 +0200
+diff -up mame-0.139u3/makefile.verbosebuild mame-0.139u3/makefile
+--- mame-0.139u3/makefile.verbosebuild	2010-09-19 17:03:31.000000000 +0200
++++ mame-0.139u3/makefile	2010-09-19 17:12:14.000000000 +0200
 @@ -294,12 +294,12 @@ BUILD_EXE = $(EXE)
  endif
  
@@ -19,14 +19,14 @@ diff -up mess-0.139/makefile.verbosebuild mess-0.139/makefile
  
  
  
-@@ -727,12 +727,12 @@ $(OBJ)/%.s: $(SRC)/%.c | $(OSPREBUILD)
+@@ -745,12 +745,12 @@ $(OBJ)/%.s: $(SRC)/%.c | $(OSPREBUILD)
  
- $(OBJ)/%.lh: $(SRC)/%.lay $(FILE2STR)
+ $(OBJ)/%.lh: $(SRC)/%.lay $(FILE2STR_TARGET)
  	@echo Converting $<...
 -	@$(FILE2STR) $< $@ layout_$(basename $(notdir $<))
 +	$(FILE2STR) $< $@ layout_$(basename $(notdir $<))
  
- $(OBJ)/%.fh: $(SRC)/%.png $(PNG2BDC) $(FILE2STR)
+ $(OBJ)/%.fh: $(SRC)/%.png $(PNG2BDC_TARGET) $(FILE2STR_TARGET)
  	@echo Converting $<...
 -	@$(PNG2BDC) $< $(OBJ)/temp.bdc
 -	@$(FILE2STR) $(OBJ)/temp.bdc $@ font_$(basename $(notdir $<)) UINT8
