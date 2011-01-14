@@ -1,7 +1,7 @@
 # the debug build is disabled by default, please use --with debug to override
 %bcond_with debug
 
-%global baseversion 140
+%global baseversion 141
 
 Name:           mess
 Version:        0.%{baseversion}
@@ -25,7 +25,7 @@ BuildRequires:  expat-devel
 BuildRequires:  GConf2-devel
 BuildRequires:  gtk2-devel
 BuildRequires:  p7zip
-BuildRequires:  SDL-devel
+BuildRequires:  SDL_ttf-devel
 BuildRequires:  unrar
 BuildRequires:  zlib-devel
 
@@ -70,7 +70,7 @@ BuildArch:      noarch
 7za x %{SOURCE0}
 find . -type f -not -name uismall.png -exec sed -i 's/\r//' {} \;
 unzip -o %{SOURCE1}
-%patch0 -p1 -b .fortify
+#patch0 -p1 -b .fortify
 %patch1 -p1 -b .verbosebuild
 
 # Remove windows-specific documentation
@@ -214,6 +214,11 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Fri Jan 14 2011 Julian Sikorski <belegdol@fedoraproject.org> - 0.141-1
+- Updated to 0.141
+- Temporarily dropped the fortify patch
+- Added SDL_ttf-devel to BuildRequires, removed explicit SDL-devel
+
 * Mon Nov 01 2010 Julian Sikorski <belegdol@fedoraproject.org> - 0.140-1
 - Updated to 0.140
 - Updated the verbosebuild patch
