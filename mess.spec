@@ -172,11 +172,7 @@ install -pm 755 %{name}d $RPM_BUILD_ROOT%{_bindir}
 %else
 install -pm 755 %{name} $RPM_BUILD_ROOT%{_bindir}
 %endif
-%if 0%{?snapshot}
 install -pm 755 castool dat2html imgtool $RPM_BUILD_ROOT%{_bindir}
-%else
-install -pm 755 castool dat2html imgtool messtest $RPM_BUILD_ROOT%{_bindir}
-%endif
 install -pm 644 sysinfo.dat $RPM_BUILD_ROOT%{_datadir}/%{name}
 install -pm 644 artwork/* $RPM_BUILD_ROOT%{_datadir}/%{name}/artwork
 install -pm 644 hash/* $RPM_BUILD_ROOT%{_datadir}/%{name}/hash
@@ -214,16 +210,9 @@ rm -rf $RPM_BUILD_ROOT
 %files tools
 %defattr(-,root,root,-)
 %doc imgtool.txt
-%if 0%{?snapshot}
 %{_bindir}/castool
 %{_bindir}/dat2html
 %{_bindir}/imgtool
-%else
-%{_bindir}/castool
-%{_bindir}/dat2html
-%{_bindir}/imgtool
-%{_bindir}/messtest
-%endif
 
 %files data
 %defattr(-,root,root,-)
@@ -241,6 +230,7 @@ rm -rf $RPM_BUILD_ROOT
 - No longer enable joystick by default
 - Re-enabled the fortify patch
 - Delete mame hash files
+- Dropped messtest
 
 * Fri Jan 14 2011 Julian Sikorski <belegdol@fedoraproject.org> - 0.141-1
 - Updated to 0.141
