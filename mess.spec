@@ -1,7 +1,7 @@
 # the debug build is disabled by default, please use --with debug to override
 %bcond_with debug
 
-%global baseversion 142
+%global baseversion 143
 #global snapshot 1
 
 Name:           mess
@@ -16,10 +16,11 @@ URL:            http://www.mess.org/
 %if 0%{?snapshot}
 Source0:        mess-snapshot.tar.xz
 %else
-Source0:        http://www.aarongiles.com/mirror/releases/mame0%{baseversion}s.exe
-Source1:        http://www.mess.org/files/%{name}0%{baseversion}s.zip
+#Available here:
+#http://mess.redump.net/downloads
+Source0:        %{name}0%{baseversion}s.zip
 %endif
-Source2:        ctrlr.rar
+Source1:        ctrlr.rar
 Patch0:         %{name}-fortify.patch
 Patch1:         %{name}-verbosebuild.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -27,7 +28,6 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:  expat-devel
 BuildRequires:  GConf2-devel
 BuildRequires:  gtk2-devel
-BuildRequires:  p7zip
 BuildRequires:  SDL_ttf-devel
 BuildRequires:  unrar
 BuildRequires:  zlib-devel
@@ -72,12 +72,9 @@ BuildArch:      noarch
 %if 0%{?snapshot}
 %setup -qn %{name}
 %else
-%setup -qcT
-7za x %{SOURCE0}
-#mess does not need mame hash files
-rm -rf hash
-find . -type f -not -name uismall.png -exec sed -i 's/\r//' {} \;
-unzip -o %{SOURCE1}
+%setup -qc
+# Fix end-of-line encoding, but don't ruin binary files
+find . -type f -not -name \*.png -not -name \*.zip -exec sed -i 's/\r//' {} \;
 %endif
 %patch0 -p1 -b .fortify
 %patch1 -p1 -b .verbosebuild
@@ -88,16 +85,9 @@ rm -fr docs/win*
 # Move the imgtool documentation to the top dir for better visibility
 mv docs/imgtool.txt .
 
-# Fix permissions
-chmod 644 docs/config.txt docs/credits.htm docs/license.txt docs/mame.txt docs/newvideo.txt
-find src/mess -type f \( -name \*.h -or -name \*.c \) -exec chmod 644 {} \;
-chmod 644 src/mame/machine/snescx4.h
-
-# Fix newvideo.txt encoding
-pushd docs
-/usr/bin/iconv -f cp1250 -t utf-8 newvideo.txt > newvideo.txt.conv
-/bin/mv -f newvideo.txt.conv newvideo.txt
-popd
+# Fix whatsnew.txt encoding
+/usr/bin/iconv -f iso8859-1 -t utf-8 whatsnew.txt > whatsnew.txt.conv
+/bin/mv -f whatsnew.txt.conv whatsnew.txt
 
 # Create ini file
 cat > %{name}.ini << EOF
@@ -179,7 +169,7 @@ install -pm 644 hash/* $RPM_BUILD_ROOT%{_datadir}/%{name}/hash
 install -pm 644 %{name}.ini $RPM_BUILD_ROOT%{_sysconfdir}/%{name}
 
 # Install controller files
-unrar x %{SOURCE2} $RPM_BUILD_ROOT%{_datadir}/%{name}
+unrar x %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/%{name}
 
 
 %clean
@@ -223,6 +213,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jun 29 2011 Julian Sikorski <belegdol@fedoraproject.org> - 0.143-1
+- Updated to 0.143
+- Updated the verbosebuild patch
+- MAME source is not needed anymore
+- Dropped p7zip from BuildRequires
+
 * Mon Apr 04 2011 Julian Sikorski <belegdol@fedoraproject.org> - 0.142-1
 - Updated to 0.142
 - Provided an easy way to build a SVN snapshot

@@ -1,7 +1,7 @@
-diff -up mame-0.139u3/makefile.verbosebuild mame-0.139u3/makefile
---- mame-0.139u3/makefile.verbosebuild	2010-09-19 17:03:31.000000000 +0200
-+++ mame-0.139u3/makefile	2010-09-19 17:12:14.000000000 +0200
-@@ -294,12 +294,12 @@ BUILD_EXE = $(EXE)
+diff -up mess-0.143/makefile.verbosebuild mess-0.143/makefile
+--- mess-0.143/makefile.verbosebuild	2011-06-29 18:37:48.905676677 +0200
++++ mess-0.143/makefile	2011-06-29 18:40:27.154888332 +0200
+@@ -297,12 +297,12 @@ BUILD_EXE = $(EXE)
  endif
  
  # compiler, linker and utilities
@@ -19,7 +19,7 @@ diff -up mame-0.139u3/makefile.verbosebuild mame-0.139u3/makefile
  
  
  
-@@ -745,12 +745,12 @@ $(OBJ)/%.s: $(SRC)/%.c | $(OSPREBUILD)
+@@ -752,12 +752,12 @@ $(OBJ)/%.s: $(SRC)/%.c | $(OSPREBUILD)
  
  $(OBJ)/%.lh: $(SRC)/%.lay $(FILE2STR_TARGET)
  	@echo Converting $<...
@@ -33,5 +33,5 @@ diff -up mame-0.139u3/makefile.verbosebuild mame-0.139u3/makefile
 +	$(PNG2BDC) $< $(OBJ)/temp.bdc
 +	$(FILE2STR) $(OBJ)/temp.bdc $@ font_$(basename $(notdir $<)) UINT8
  
- $(OBJ)/%.a:
- 	@echo Archiving $@...
+ $(DRIVLISTOBJ): $(DRIVLISTSRC)
+ 	@echo Compiling $<...
