@@ -1,15 +1,14 @@
 # the debug build is disabled by default, please use --with debug to override
 %bcond_with debug
 
-%global baseversion 143
-#global snapshot 1
+%global baseversion 144
+%global snapshot 0
 
 Name:           mess
 Version:        0.%{baseversion}
 Release:        1%{?dist}
 Summary:        Multiple Emulator Super System
 
-Group:          Applications/Emulators
 #Files in src/lib/util and src/osd (except src/osd/sdl) are BSD
 License:        MAME License
 URL:            http://www.mess.org/
@@ -17,13 +16,12 @@ URL:            http://www.mess.org/
 Source0:        mess-snapshot.tar.xz
 %else
 #Available here:
-#http://mess.redump.net/downloads
+#http://www.mess.org/downloads
 Source0:        %{name}0%{baseversion}s.zip
 %endif
 Source1:        ctrlr.rar
 Patch0:         %{name}-fortify.patch
 Patch1:         %{name}-verbosebuild.patch
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  expat-devel
 BuildRequires:  GConf2-devel
@@ -86,8 +84,7 @@ rm -fr docs/win*
 mv docs/imgtool.txt .
 
 # Fix whatsnew.txt encoding
-/usr/bin/iconv -f iso8859-1 -t utf-8 whatsnew.txt > whatsnew.txt.conv
-/bin/mv -f whatsnew.txt.conv whatsnew.txt
+iconv -f cp1252 -t utf-8 whatsnew.txt > whatsnew.txt.conv && mv -f whatsnew.txt.conv whatsnew.txt
 
 # Create ini file
 cat > %{name}.ini << EOF
@@ -172,12 +169,7 @@ install -pm 644 %{name}.ini $RPM_BUILD_ROOT%{_sysconfdir}/%{name}
 unrar x %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/%{name}
 
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
-
 %files
-%defattr(-,root,root,-)
 %doc *.txt docs/*
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.ini
 %dir %{_sysconfdir}/%{name}
@@ -198,14 +190,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/skel/.%{name}
 
 %files tools
-%defattr(-,root,root,-)
 %doc imgtool.txt
 %{_bindir}/castool
 %{_bindir}/dat2html
 %{_bindir}/imgtool
 
 %files data
-%defattr(-,root,root,-)
 %{_datadir}/%{name}/sysinfo.dat
 %{_datadir}/%{name}/artwork/*
 %{_datadir}/%{name}/ctrlr/*
@@ -213,6 +203,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Nov 15 2011 Julian Sikorski <belegdol@fedoraproject.org> - 0.144-1
+- Updated to 0.144
+- Updated the Source0 URL comment
+- Fixed whatsnew.txt encoding (cp1252 → utf-8)
+- Dropped obsolete Group, Buildroot, %%clean and %%defattr
+
 * Wed Jun 29 2011 Julian Sikorski <belegdol@fedoraproject.org> - 0.143-1
 - Updated to 0.143
 - Updated the verbosebuild patch
