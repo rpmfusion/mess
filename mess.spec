@@ -1,7 +1,7 @@
 # the debug build is disabled by default, please use --with debug to override
 %bcond_with debug
 
-%global baseversion 144
+%global baseversion 145
 %global snapshot 0
 
 Name:           mess
@@ -22,10 +22,13 @@ Source0:        %{name}0%{baseversion}s.zip
 Source1:        ctrlr.rar
 Patch0:         %{name}-fortify.patch
 Patch1:         %{name}-verbosebuild.patch
+Patch2:         %{name}-systemlibs.patch
 
 BuildRequires:  expat-devel
+BuildRequires:  flac-devel
 BuildRequires:  GConf2-devel
 BuildRequires:  gtk2-devel
+# BuildRequires:  libjpeg-devel
 BuildRequires:  SDL_ttf-devel
 BuildRequires:  unrar
 BuildRequires:  zlib-devel
@@ -76,6 +79,7 @@ find . -type f -not -name \*.png -not -name \*.zip -exec sed -i 's/\r//' {} \;
 %endif
 %patch0 -p1 -b .fortify
 %patch1 -p1 -b .verbosebuild
+%patch2 -p1 -b .systemlibs
 
 # Remove windows-specific documentation
 rm -fr docs/win*
@@ -121,11 +125,13 @@ EOF
 RPM_OPT_FLAGS=$(echo $RPM_OPT_FLAGS | sed -e s/"-O2 -g -pipe -Wall "//)
 
 %if %{with debug}
-make %{?_smp_mflags} NOWERROR=1 SYMBOLS=1 OPTIMIZE=2 BUILD_EXPAT=0 BUILD_ZLIB=0 SUFFIX64="" \
-    OPT_FLAGS="$RPM_OPT_FLAGS -DINI_PATH='\"%{_sysconfdir}/%{name};\"'" DEBUG=1 all TARGET=mess
+make %{?_smp_mflags} NOWERROR=1 SYMBOLS=1 OPTIMIZE=2 BUILD_EXPAT=0 BUILD_ZLIB=0 \
+    BUILD_JPEG=1 BUILD_FLAC=0 SUFFIX64="" DEBUG=1 TARGET=mess \
+    OPT_FLAGS="$RPM_OPT_FLAGS -DINI_PATH='\"%{_sysconfdir}/%{name};\"'" all
 %else
-make %{?_smp_mflags} NOWERROR=1 SYMBOLS=1 OPTIMIZE=2 BUILD_EXPAT=0 BUILD_ZLIB=0 SUFFIX64="" \
-    OPT_FLAGS="$RPM_OPT_FLAGS -DINI_PATH='\"%{_sysconfdir}/%{name};\"'" all TARGET=mess
+make %{?_smp_mflags} NOWERROR=1 SYMBOLS=1 OPTIMIZE=2 BUILD_EXPAT=0 BUILD_ZLIB=0 \
+    BUILD_JPEG=1 BUILD_FLAC=0 SUFFIX64="" TARGET=mess\
+    OPT_FLAGS="$RPM_OPT_FLAGS -DINI_PATH='\"%{_sysconfdir}/%{name};\"'" all
 %endif
 
 
@@ -159,7 +165,7 @@ install -pm 755 %{name}d $RPM_BUILD_ROOT%{_bindir}
 %else
 install -pm 755 %{name} $RPM_BUILD_ROOT%{_bindir}
 %endif
-install -pm 755 castool dat2html imgtool $RPM_BUILD_ROOT%{_bindir}
+install -pm 755 castool floptool imgtool $RPM_BUILD_ROOT%{_bindir}
 install -pm 644 sysinfo.dat $RPM_BUILD_ROOT%{_datadir}/%{name}
 install -pm 644 artwork/* $RPM_BUILD_ROOT%{_datadir}/%{name}/artwork
 install -pm 644 hash/* $RPM_BUILD_ROOT%{_datadir}/%{name}/hash
@@ -192,7 +198,7 @@ unrar x %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/%{name}
 %files tools
 %doc imgtool.txt
 %{_bindir}/castool
-%{_bindir}/dat2html
+%{_bindir}/floptool
 %{_bindir}/imgtool
 
 %files data
@@ -203,6 +209,12 @@ unrar x %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/%{name}
 
 
 %changelog
+* Tue Feb 07 2012 Julian Sikorski <belegdol@fedoraproject.org> - 0.145-1
+- Updated to 0.145
+- Patched to use system libflac, libjpeg needs more work
+- dat2html is no more
+- Added floptool to the -tools sub-package
+
 * Tue Nov 15 2011 Julian Sikorski <belegdol@fedoraproject.org> - 0.144-1
 - Updated to 0.144
 - Updated the Source0 URL comment
