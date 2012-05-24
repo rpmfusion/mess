@@ -1,7 +1,7 @@
 # the debug build is disabled by default, please use --with debug to override
 %bcond_with debug
 
-%global baseversion 145
+%global baseversion 146
 %global snapshot 0
 
 Name:           mess
@@ -22,7 +22,6 @@ Source0:        %{name}0%{baseversion}s.zip
 Source1:        ctrlr.rar
 Patch0:         %{name}-fortify.patch
 Patch1:         %{name}-verbosebuild.patch
-Patch2:         %{name}-systemlibs.patch
 
 BuildRequires:  expat-devel
 BuildRequires:  flac-devel
@@ -34,6 +33,8 @@ BuildRequires:  unrar
 BuildRequires:  zlib-devel
 
 Provides:       sdlmess = 0%{baseversion}-%{release}
+Provides:       bundled(libjpeg) = 8c
+Provides:       bundled(lzma-sdk) = 9.22
 Obsoletes:      sdlmess < 0136-2
 
 %description
@@ -79,7 +80,6 @@ find . -type f -not -name \*.png -not -name \*.zip -exec sed -i 's/\r//' {} \;
 %endif
 %patch0 -p1 -b .fortify
 %patch1 -p1 -b .verbosebuild
-%patch2 -p1 -b .systemlibs
 
 # Remove windows-specific documentation
 rm -fr docs/win*
@@ -94,12 +94,12 @@ iconv -f cp1252 -t utf-8 whatsnew.txt > whatsnew.txt.conv && mv -f whatsnew.txt.
 cat > %{name}.ini << EOF
 # Define multi-user paths
 artpath            %{_datadir}/%{name}/artwork;%{_datadir}/%{name}/effects
+cheatpath          %{_datadir}/%{name}/cheats
 ctrlrpath          %{_datadir}/%{name}/ctrlr
 fontpath           %{_datadir}/%{name}/fonts
 hashpath           %{_datadir}/%{name}/hash
-rompath            %{_datadir}/%{name}/roms
+rompath            %{_datadir}/%{name}/roms;%{_datadir}/%{name}/chds
 samplepath         %{_datadir}/%{name}/samples
-cheatpath          %{_datadir}/%{name}/cheats
 
 # Allow user to override ini settings
 inipath            \$HOME/.%{name}/ini;%{_sysconfdir}/%{name}
@@ -139,15 +139,6 @@ make %{?_smp_mflags} NOWERROR=1 SYMBOLS=1 OPTIMIZE=2 BUILD_EXPAT=0 BUILD_ZLIB=0 
 rm -rf $RPM_BUILD_ROOT
 
 # create directories
-install -d $RPM_BUILD_ROOT%{_bindir}
-install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/artwork
-install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/roms
-install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/ctrlr
-install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/fonts
-install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/hash
-install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/samples
-install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/software
-install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/cheats
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/%{name}
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/skel/.%{name}/cfg
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/skel/.%{name}/comments
@@ -156,10 +147,25 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/skel/.%{name}/ini
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/skel/.%{name}/inp
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/skel/.%{name}/memcard
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/skel/.%{name}/nvram
-install -d $RPM_BUILD_ROOT%{_sysconfdir}/skel/.%{name}/sta
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/skel/.%{name}/snap
+install -d $RPM_BUILD_ROOT%{_sysconfdir}/skel/.%{name}/sta
+install -d $RPM_BUILD_ROOT%{_bindir}
+install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/artwork
+install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/chds
+install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/cheats
+install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/ctrlr
+install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/effects
+install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/fonts
+install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/hash
+install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/hlsl
+install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/keymaps
+install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/roms
+install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/samples
+install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/shader
+install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/software
 
-# Install binaries and config files
+# install files
+install -pm 644 %{name}.ini $RPM_BUILD_ROOT%{_sysconfdir}/%{name}
 %if %{with debug}
 install -pm 755 %{name}d $RPM_BUILD_ROOT%{_bindir}
 %else
@@ -169,7 +175,10 @@ install -pm 755 castool floptool imgtool $RPM_BUILD_ROOT%{_bindir}
 install -pm 644 sysinfo.dat $RPM_BUILD_ROOT%{_datadir}/%{name}
 install -pm 644 artwork/* $RPM_BUILD_ROOT%{_datadir}/%{name}/artwork
 install -pm 644 hash/* $RPM_BUILD_ROOT%{_datadir}/%{name}/hash
-install -pm 644 %{name}.ini $RPM_BUILD_ROOT%{_sysconfdir}/%{name}
+install -pm 644 hlsl/* $RPM_BUILD_ROOT%{_datadir}/%{name}/hlsl
+install -pm 644 src/osd/sdl/keymaps/* $RPM_BUILD_ROOT%{_datadir}/%{name}/keymaps
+install -pm 644 src/osd/sdl/shader/*.?sh $RPM_BUILD_ROOT%{_datadir}/%{name}/shader
+
 
 # Install controller files
 unrar x %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/%{name}
@@ -179,6 +188,7 @@ unrar x %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/%{name}
 %doc *.txt docs/*
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.ini
 %dir %{_sysconfdir}/%{name}
+%{_sysconfdir}/skel/.%{name}
 %if %{with debug}
 %{_bindir}/%{name}d
 %else
@@ -186,14 +196,19 @@ unrar x %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/%{name}
 %endif
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/artwork
-%dir %{_datadir}/%{name}/roms
+%dir %{_datadir}/%{name}/chds
+%dir %{_datadir}/%{name}/cheats
 %dir %{_datadir}/%{name}/ctrlr
+%dir %{_datadir}/%{name}/effects
 %{_datadir}/%{name}/fonts
 %dir %{_datadir}/%{name}/hash
+%dir %{_datadir}/%{name}/hlsl
+%{_datadir}/%{name}/keymaps
+%dir %{_datadir}/%{name}/roms
 %dir %{_datadir}/%{name}/samples
+%dir %{_datadir}/%{name}/shader
 %dir %{_datadir}/%{name}/software
-%dir %{_datadir}/%{name}/cheats
-%{_sysconfdir}/skel/.%{name}
+
 
 %files tools
 %doc imgtool.txt
@@ -206,9 +221,18 @@ unrar x %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/%{name}
 %{_datadir}/%{name}/artwork/*
 %{_datadir}/%{name}/ctrlr/*
 %{_datadir}/%{name}/hash/*
+%{_datadir}/%{name}/hlsl/*
+%{_datadir}/%{name}/shader/*
 
 
 %changelog
+* Wed May 23 2012 Julian Sikorski <belegdol@fedoraproject.org> - 0.146-1
+- Updated to 0.146
+- Added bundled(libjpeg) and bundled(lzma-sdk) Provides
+- Dropped the systemlibs patch (no longer necessary)
+- Added keymaps and shaders to the installed files
+- Cleaned up the spec to match the mame one more closely
+
 * Tue Feb 07 2012 Julian Sikorski <belegdol@fedoraproject.org> - 0.145-1
 - Updated to 0.145
 - Patched to use system libflac, libjpeg needs more work
